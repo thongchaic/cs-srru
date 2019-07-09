@@ -31,10 +31,10 @@ def __init__():
 
 def start_ap():
 	ap = network.WLAN(network.AP_IF)
-	mac = ubinascii.hexlify(ap.config('mac'),'').decode()
-	ap.config(essid=CFG_APNAME+'-'+str(mac),password='micropythoN',channel=11)
-	ap.ifconfig(('4.4.4.4', '255.255.255.0', '4.4.4.4', '1.1.1.1'))
-	ap.active(True)
+	#mac = ubinascii.hexlify(ap.config('mac'),'').decode()
+	#ap.config(essid=CFG_APNAME+'-'+str(mac),password='micropythoN',channel=11)
+	#ap.ifconfig(('4.4.4.4', '255.255.255.0', '4.4.4.4', '1.1.1.1'))
+	ap.active(False)
 	
 def do_connect():
 
@@ -61,9 +61,8 @@ def tracer_callback(t):
         
 def start_my_car():
 
-
-
         while True:
+                
                 front_cm = FRONT.distance_cm()
                 if front_cm < 15:
                         FRONT_LED.value(0)
@@ -76,10 +75,15 @@ def start_my_car():
                 else:
                         REAR_LED.value(1)
 
+                line_tracking = TRACER.value()
+                print(front_cm,rear_cm,line_tracking)
+
 
 if __name__ == '__main__':
         
 	__init__()
+	start_ap()
+	
 	do_connect()
 
 	FRONT_LED.value(1)
