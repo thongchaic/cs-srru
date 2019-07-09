@@ -17,10 +17,10 @@ CFG_BSSID_PASS='st11ae58*'
 FRONT_LED = machine.Pin(2, machine.Pin.OUT)
 REAR_LED = machine.Pin(16, machine.Pin.OUT)
 
-TRACER = machine.Pin(5, machine.Pin.IN)
-
-FRONT  = HCSR04(trigger_pin=12, echo_pin=14, echo_timeout_us=1000000)
-REAR  = HCSR04(trigger_pin=15, echo_pin=13, echo_timeout_us=1000000)
+FR = machine.Pin(5, machine.Pin.OUT)
+FL = machine.Pin(4, machine.Pin.OUT)
+#FRONT  = HCSR04(trigger_pin=12, echo_pin=14, echo_timeout_us=1000000)
+#REAR  = HCSR04(trigger_pin=15, echo_pin=13, echo_timeout_us=1000000)
 
 
 def __init__():
@@ -28,6 +28,8 @@ def __init__():
 	print('Frequency ', machine.freq())
 	FRONT_LED.value(1)
         REAR_LED.value(1)
+        FR.value(1)
+        FL.value(1)
 
 def start_ap():
 	ap = network.WLAN(network.AP_IF)
@@ -46,7 +48,7 @@ def do_connect():
                 return 
         
         if not wlan.isconnected():
-                wlan.connect('CS3108')
+                wlan.connect(CFG_BSSID,CFG_BSSID_PASS)
                 c = 0
                 while not wlan.isconnected():
                         time.sleep(1)
@@ -61,20 +63,24 @@ def tracer_callback(t):
         
 def start_my_car():
 
+        print("StartMyCar")
+        FR.value(0)
+        FL.value(0)
 
+        #while True:
+                
+                #time.sleep(0.10)
+                #front_cm = FRONT.distance_cm()
+                #if front_cm < 15:
+                        #FRONT_LED.value(0)
+                #else:
+                        #FRONT_LED.value(1)
 
-        while True:
-                front_cm = FRONT.distance_cm()
-                if front_cm < 15:
-                        FRONT_LED.value(0)
-                else:
-                        FRONT_LED.value(1)
-
-                rear_cm = REAR.distance_cm()
-                if rear_cm < 15:
-                        REAR_LED.value(0)
-                else:
-                        REAR_LED.value(1)
+                #rear_cm = REAR.distance_cm()
+                #if rear_cm < 15:
+                        #REAR_LED.value(0)
+                #else:
+                        #REAR_LED.value(1)
 
 
 if __name__ == '__main__':
