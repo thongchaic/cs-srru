@@ -8,12 +8,11 @@ from MQ2 import MQ2
 import dht
 
 
-CFG_BSSID='SRRU-IoT'
-CFG_BSSID_PASS='SrruIoT@2019'
+CFG_BSSID='PNHome2'
+CFG_BSSID_PASS='st11ae58*'
 
 FRONT_LED = machine.Pin(2, machine.Pin.OUT)
 DHT_SENSOR = dht.DHT22(machine.Pin(5))
-LDR_SENSOR = machine.Pin(14, machine.Pin.IN)
 MQ2_SENSOR = MQ2(pinData=0,baseVoltage=3.3)
 
 def __init__():
@@ -54,9 +53,9 @@ def blink_led(t=1,d=0.1):
                 FRONT_LED.value(t%2)
                 t = t - 1 
                 time.sleep(d)
-                
+        FRONT_LED.value(1)
+        
 def measurment():
-
 
         temp = None
         humid = None
@@ -64,7 +63,6 @@ def measurment():
 	lpg = None
 	methane = None
 	hydrogen = None
-	ldr = None 
 	try:
                 print("Start DHT sensor")
 		blink_led(5,0.1)
@@ -76,15 +74,8 @@ def measurment():
 		FRONT_LED.value(1)
 		
 	try:
-                print("Reading LDR...")
-                blink_led(10,0.2)
-                ldr = LDR_SENSOR.value()
-        except:
-                print("LDR Error")
-                FRONT_LED.value(1)
-	try:
                 print("Start MQ2 sensor")
-		blink_led(25,0.05)
+		blink_led(15,0.05)
 		MQ2_SENSOR.calibrate()
                 print("reading smoke ...")
                 blink_led(25,0.05)
@@ -102,13 +93,13 @@ def measurment():
 		print("MQ2 ERROR")
 		FRONT_LED.value(1)
 
-        print("data measured, ", temp,", ",humid,smoke,lpg,methane,hydrogen, ldr)
-        return temp, humid, smoke, lpg, methane, hydrogen, ldr
+        print("data measured, ", temp,", ",humid,smoke,lpg,methane,hydrogen)
+        return temp, humid, smoke, lpg, methane, hydrogen
 
-def send_data(temp, humid, smoke, lpg, methane, hydrogen, ldr):
-        print("sending humid=",temp, humid, smoke, lpg, methane, hydrogen, ldr)
-        blink_led(10,0.1)
-        send_url = "https://surin.srru.ac.th/api/iot/data?token=431.2218518518519&device_id=13"
+def send_data(temp, humid, smoke, lpg, methane, hydrogen):
+        blink_led(10,0.2)
+        print("sending humid=",temp, humid, smoke, lpg, methane, hydrogen)
+        send_url = "https://surin.srru.ac.th/api/iot/data?token=431.2218518518519&device_id=9"
         if temp is not None:
                 send_url = send_url+"&dht_temperature="+str(temp)
         if humid is not None:
@@ -121,8 +112,6 @@ def send_data(temp, humid, smoke, lpg, methane, hydrogen, ldr):
                 send_url = send_url+"&methane="+str(methane)
         if hydrogen is not None:
                 send_url = send_url+"&hydrogen="+str(hydrogen)
-        if ldr is not None:
-                send_url = send_url+"&ldr="+str(ldr)
                 
         urequests.get(send_url)
         return True
@@ -131,7 +120,7 @@ def deep_sleep():
         print('Deep sleep...for .. 60s')
         rtc = machine.RTC()
         rtc.irq(trigger=rtc.ALARM0, wake=machine.DEEPSLEEP)
-        rtc.alarm(rtc.ALARM0, 90000)
+        rtc.alarm(rtc.ALARM0, 60000)
         machine.deepsleep()
 
 if __name__ == '__main__':
@@ -146,9 +135,9 @@ if __name__ == '__main__':
 	if connected:
 
                 FRONT_LED.value(1)
-		temp, humid, smoke, lpg, methane, hydrogen, ldr = measurment()
+		temp, humid, smoke, lpg, methane, hydrogen = measurment()
                 c = 0
-                while not send_data(temp, humid, smoke, lpg, methane, hydrogen, ldr):
+                while not send_data(temp, humid, smoke, lpg, methane, hydrogen):
                         print('Send data failed .. ',c)
                         time.sleep(3)
                         c = c + 1
