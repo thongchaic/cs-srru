@@ -8,12 +8,12 @@ from MQ7 import MQ7
 import dht
 
 
-CFG_BSSID='PNHome2'
-CFG_BSSID_PASS='st11ae58*'
+CFG_BSSID='SRRU-IoT'
+CFG_BSSID_PASS='SrruIoT@2019'
 
 FRONT_LED = machine.Pin(2, machine.Pin.OUT)
 DHT_SENSOR = dht.DHT22(machine.Pin(5))
-MQ7_SENSOR = MQ2(pinData=0,baseVoltage=3.3)
+MQ7_SENSOR = MQ7(pinData=0,baseVoltage=3.3)
 
 def __init__():
 	FRONT_LED.value(1)
@@ -53,6 +53,7 @@ def blink_led(t=1,d=0.1):
                 FRONT_LED.value(t%2)
                 t = t - 1 
                 time.sleep(d)
+        FRONT_LED.value(1)
                 
 def measurment():
 
@@ -75,7 +76,7 @@ def measurment():
                 print("Start MQ7")
 		blink_led(25,0.05)
 		MQ7_SENSOR.calibrate()
-                print("reading smoke ...")
+                print("reading readCarbonMonoxide ...")
                 blink_led(25,0.05)
                 carbon_m = MQ7_SENSOR.readCarbonMonoxide()
 	except:
@@ -103,7 +104,7 @@ def deep_sleep():
         print('Deep sleep...for .. 60s')
         rtc = machine.RTC()
         rtc.irq(trigger=rtc.ALARM0, wake=machine.DEEPSLEEP)
-        rtc.alarm(rtc.ALARM0, 90000)
+        rtc.alarm(rtc.ALARM0, 60000)
         machine.deepsleep()
 
 if __name__ == '__main__':
@@ -131,4 +132,4 @@ if __name__ == '__main__':
         FRONT_LED.value(1)
         print("Code update gap")
         time.sleep(10)
-	#deep_sleep()
+	deep_sleep()

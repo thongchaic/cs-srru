@@ -8,7 +8,7 @@ class MQ7(BaseMQ):
 	## Clean air coefficient
 	MQ7_RO_BASE = float(27.0)
 
-	def __init__(self, pinData, pinHeater=-1, boardResistance = 10, baseVoltage = 5.0, measuringStrategy = BaseMQ.STRATEGY_ACCURATE):
+	def __init__(self, pinData=0, pinHeater=-1, boardResistance = 10, baseVoltage = 5.0, measuringStrategy = BaseMQ.STRATEGY_ACCURATE):
 		# Call superclass to fill attributes
 		super().__init__(pinData, pinHeater, boardResistance, baseVoltage, measuringStrategy)
 		pass

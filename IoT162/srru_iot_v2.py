@@ -54,6 +54,7 @@ def blink_led(t=1,d=0.1):
                 FRONT_LED.value(t%2)
                 t = t - 1 
                 time.sleep(d)
+        FRONT_LED.value(1)
                 
 def measurment():
 
