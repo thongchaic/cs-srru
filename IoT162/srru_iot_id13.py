@@ -14,7 +14,7 @@ CFG_BSSID_PASS='SrruIoT@2019'
 FRONT_LED = machine.Pin(2, machine.Pin.OUT)
 DHT_SENSOR = dht.DHT22(machine.Pin(5))
 LDR_SENSOR = machine.Pin(14, machine.Pin.IN)
-MQ2_SENSOR = MQ2(pinData=0,baseVoltage=3.3)
+MQ2_SENSOR = MQ2(pinData=0,baseVoltage=5)
 
 def __init__():
 	FRONT_LED.value(1)
@@ -40,7 +40,7 @@ def do_connect():
                 c = 0
                 while not wlan.isconnected():
                         time.sleep(1)
-                        print('[',c,'] connecting ... to WLAN')
+                        print('[',c,'] connecting ... to ',CFG_BSSID)
                         c = c + 1
                         FRONT_LED.value(c%2)
                         if c > 300:
@@ -109,30 +109,35 @@ def measurment():
 def send_data(temp, humid, smoke, lpg, methane, hydrogen, ldr):
         print("sending humid=",temp, humid, smoke, lpg, methane, hydrogen, ldr)
         blink_led(10,0.1)
-        send_url = "https://surin.srru.ac.th/api/iot/data?token=431.2218518518519&device_id=13"
-        if temp is not None:
-                send_url = send_url+"&dht_temperature="+str(temp)
-        if humid is not None:
-                send_url = send_url+"&dht_humidity="+str(humid)
-        if smoke is not None:
-                send_url = send_url+"&smoke="+str(smoke)
-        if lpg is not None:
-                send_url = send_url+"&lpg="+str(lpg)
-        if methane is not None:
-                send_url = send_url+"&methane="+str(methane)
-        if hydrogen is not None:
-                send_url = send_url+"&hydrogen="+str(hydrogen)
-        if ldr is not None:
-                send_url = send_url+"&ldr="+str(ldr)
+        try:
+                send_url = "https://surin.srru.ac.th/api/iot/data?token=431.2218518518519&device_id=13"
+                if temp is not None:
+                        send_url = send_url+"&dht_temperature="+str(temp)
+                if humid is not None:
+                        send_url = send_url+"&dht_humidity="+str(humid)
+                if smoke is not None:
+                        send_url = send_url+"&smoke="+str(smoke)
+                if lpg is not None:
+                        send_url = send_url+"&lpg="+str(lpg)
+                if methane is not None:
+                        send_url = send_url+"&methane="+str(methane)
+                if hydrogen is not None:
+                        send_url = send_url+"&hydrogen="+str(hydrogen)
+                if ldr is not None:
+                        send_url = send_url+"&ldr="+str(ldr)
+                        
+                urequests.get(send_url)
+                return True
+        except:
+                print("send data failed: ",temp, humid, smoke, lpg, methane, hydrogen, ldr)
                 
-        urequests.get(send_url)
-        return True
+        return False
 
 def deep_sleep():
-        print('Deep sleep...for .. 60s')
+        print('Deep sleep...for .. 50s')
         rtc = machine.RTC()
         rtc.irq(trigger=rtc.ALARM0, wake=machine.DEEPSLEEP)
-        rtc.alarm(rtc.ALARM0, 90000)
+        rtc.alarm(rtc.ALARM0, 50000)
         machine.deepsleep()
 
 if __name__ == '__main__':

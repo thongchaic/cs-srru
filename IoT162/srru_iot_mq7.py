@@ -13,7 +13,7 @@ CFG_BSSID_PASS='SrruIoT@2019'
 
 FRONT_LED = machine.Pin(2, machine.Pin.OUT)
 DHT_SENSOR = dht.DHT22(machine.Pin(5))
-MQ7_SENSOR = MQ7(pinData=0,baseVoltage=3.3)
+MQ7_SENSOR = MQ7(pinData=0,baseVoltage=5)
 
 def __init__():
 	FRONT_LED.value(1)
@@ -89,16 +89,21 @@ def measurment():
 def send_data(temp, humid, carbon_m):
         print("sending humid=",temp, humid, carbon_m)
         blink_led(10,0.1)
-        send_url = "https://surin.srru.ac.th/api/iot/data?token=431.2218518518519&device_id=11"
-        if temp is not None:
-                send_url = send_url+"&dht_temperature="+str(temp)
-        if humid is not None:
-                send_url = send_url+"&dht_humidity="+str(humid)
-        if carbon_m is not None:
-                send_url = send_url+"&carbon_monoxide="+str(carbon_m)
+        try:
+                send_url = "https://surin.srru.ac.th/api/iot/data?token=431.2218518518519&device_id=11"
+                if temp is not None:
+                        send_url = send_url+"&dht_temperature="+str(temp)
+                if humid is not None:
+                        send_url = send_url+"&dht_humidity="+str(humid)
+                if carbon_m is not None:
+                        send_url = send_url+"&carbon_monoxide="+str(carbon_m)
 
-        urequests.get(send_url)
-        return True
+                urequests.get(send_url)
+                return True
+        except:
+                print("sending temp, humid, carbon_m failed=",temp, humid, carbon_m)
+                
+        return False
 
 def deep_sleep():
         print('Deep sleep...for .. 60s')

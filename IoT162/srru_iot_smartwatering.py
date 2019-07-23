@@ -7,22 +7,22 @@ import urequests
 
 import dht
 
+
 CFG_BSSID='SRRU-IoT'
 CFG_BSSID_PASS='SrruIoT@2019'
 
 FRONT_LED = machine.Pin(2, machine.Pin.OUT)
 DHT_SENSOR = dht.DHT22(machine.Pin(5))
-#DHT22_SENSOR = dht.DHT22(machine.Pin(4))
+SOIL_SENSOR = machine.ADC(0)
+RELAY = machine.Pin(4,machine.Pin.OUT)
+
 
 def __init__():
 	FRONT_LED.value(1)
-
-def start_ap():
 	ap = network.WLAN(network.AP_IF)
-	#mac = ubinascii.hexlify(ap.config('mac'),'').decode()
-	#ap.config(essid=CFG_APNAME+'-'+str(mac),password='micropythoN',channel=11)
-	#ap.ifconfig(('4.4.4.4', '255.255.255.0', '4.4.4.4', '1.1.1.1'))
 	ap.active(False)
+	FRONT_LED.value(1)
+
 
 def do_connect():
 
@@ -46,29 +46,43 @@ def do_connect():
                         pass
 
         return True
-
+def blink_led(t=1,d=0.1):
+        while t >= 0:
+                FRONT_LED.value(t%2)
+                t = t - 1 
+                time.sleep(d)
+        FRONT_LED.value(1)
+        
 def measurment():
-        FRONT_LED.value(0)
-        DHT_SENSOR.measure()
+ 
         temp = None
         humid = None
+        soil = None
+        
         try:
+                blink_led(10,0.05)
+                DHT_SENSOR.measure()
                 temp = DHT_SENSOR.temperature()
                 humid  = DHT_SENSOR.humidity()
-                #time.sleep(5)
 
         except:
-                print("Measure failed")
+                print("DHT sensor failed!!")
+
+        try:
+                blink_led(5, 0.1)
+                soil = SOIL_SENSOR.read()
+        except:
+                print("Soil sensor failed!!")
                 
-        FRONT_LED.value(1)
-        print("data measured, ", temp,", ",humid)
-        return temp, humid
+        print("data => ", temp,", ",humid,", ",soil)
+        
+        return temp, humid, soil
 
 def send_data(temp,humid):
 
         try:
                 print("sending humid=",humid,", temp=",temp)
-                send_url = "https://surin.srru.ac.th/api/iot/data?token=431.2218518518519&device_id=12"
+                send_url = "https://surin.srru.ac.th/api/iot/data?token=431.2218518518519&device_id=0"
                 if temp is not None:
                         send_url = send_url+"&dht_temperature="+str(temp)
                 if humid is not None:
@@ -90,28 +104,10 @@ def deep_sleep():
 if __name__ == '__main__':
 
 	__init__()
-	start_ap()
-
-	FRONT_LED.value(1)
-	
 	connected = do_connect()
 
 	if connected:
-        
-                FRONT_LED.value(1)
-		temp, humid = measurment()
-                c = 0
-                while not send_data(temp,humid):
-                        print('Send data failed .. ',c)
-                        time.sleep(3)
-                        c = c + 1
-                        if c > 5:
-                                FRONT_LED.value(0)
-                                break
-                        pass
-        
-        FRONT_LED.value(1)
-        print("Code update gap")
-        time.sleep(10)
-	deep_sleep()
-	
+                while True:
+                        measurment()
+                        time.sleep(2)
+                        

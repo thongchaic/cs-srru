@@ -7,8 +7,8 @@ import urequests
 
 import dht
 
-CFG_BSSID='SRRU-IoT'
-CFG_BSSID_PASS='SrruIoT@2019'
+CFG_BSSID='GLUAYTHONG'
+CFG_BSSID_PASS='bookbank'
 
 FRONT_LED = machine.Pin(2, machine.Pin.OUT)
 DHT_SENSOR = dht.DHT22(machine.Pin(5))
@@ -38,7 +38,7 @@ def do_connect():
                 c = 0
                 while not wlan.isconnected():
                         time.sleep(1)
-                        print('[',c,'] connecting ... to WLAN')
+                        print('[',c,'] connecting ... to ',CFG_BSSID)
                         c = c + 1
                         FRONT_LED.value(c%2)
                         if c > 300:
@@ -68,7 +68,7 @@ def send_data(temp,humid):
 
         try:
                 print("sending humid=",humid,", temp=",temp)
-                send_url = "https://surin.srru.ac.th/api/iot/data?token=431.2218518518519&device_id=12"
+                send_url = "https://surin.srru.ac.th/api/iot/data?token=431.2218518518519&device_id=14"
                 if temp is not None:
                         send_url = send_url+"&dht_temperature="+str(temp)
                 if humid is not None:
@@ -81,10 +81,10 @@ def send_data(temp,humid):
         return False
 
 def deep_sleep():
-        print('Deep sleep...for .. 20s')
+        print('Deep sleep...for .. 40s')
         rtc = machine.RTC()
         rtc.irq(trigger=rtc.ALARM0, wake=machine.DEEPSLEEP)
-        rtc.alarm(rtc.ALARM0, 20000)
+        rtc.alarm(rtc.ALARM0, 40000)
         machine.deepsleep()
         
 if __name__ == '__main__':

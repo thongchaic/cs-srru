@@ -11,7 +11,7 @@ CFG_BSSID_PASS='SrruIoT@2019'
 
 FRONT_LED = machine.Pin(2, machine.Pin.OUT)
 REAR_WHEEL = machine.Pin(16, machine.Pin.OUT)
-FRONT  = HCSR04(trigger_pin=12, echo_pin=14, echo_timeout_us=1000000)
+FRONT  = HCSR04(trigger_pin=14, echo_pin=12, echo_timeout_us=1000000)
 
 
 def __init__():
@@ -20,8 +20,6 @@ def __init__():
 	FRONT_LED.value(1)
 	ap = network.WLAN(network.AP_IF)
 	mac = ubinascii.hexlify(ap.config('mac'),'').decode()
-	ap.config(essid='Robot-'+str(mac),password='micropythoN',channel=11)
-	ap.ifconfig(('4.4.4.4', '255.255.255.0', '4.4.4.4', '1.1.1.1'))
 	ap.active(False)
 	
 def do_connect():
@@ -50,7 +48,7 @@ def start_my_car():
         while True:
                 front_cm = FRONT.distance_cm()
                 print("Front=>", front_cm)
-                time.sleep(0.2)
+                time.sleep(1)
 
 
 
