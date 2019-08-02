@@ -32,6 +32,8 @@ def start_my_car():
         else:
             forward()
 
+        time.sleep(1)
+
 
 if __name__ == '__main__':
     __init__()
