@@ -26,6 +26,7 @@ def forward():
 def start_my_car():
     while True:
         front_cm = sensor.distance_cm()
+        print("distance = ",front_cm)
         if front_cm < 15:
             stop()
         else:
