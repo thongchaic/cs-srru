@@ -11,11 +11,11 @@ SENSOR = HCSR04(trigger_pin=14,echo_pin=12)
 def __init__():
     FRONT_LED.value(1)
     ap = network.WLAN(network.AP_IF)
-    mac = ubinascii.hexlify(ap.config('mac'),'').decode()
-    ap.config(essid='SUPAT_Home',password='micropythoN',channel=11)
-    ap.ifconfig(('4.4.4.4', '255.255.255.0', '4.4.4.4', '1.1.1.1'))
+    #mac = ubinascii.hexlify(ap.config('mac'),'').decode()
+    #ap.config(essid='SUPAT_Home',password='micropythoN',channel=11)
+    #ap.ifconfig(('4.4.4.4', '255.255.255.0', '4.4.4.4', '1.1.1.1'))
     ap.active(False)
-    ap.ifconfig()
+    #ap.ifconfig()
 
 def start_mon():
     passed=False
