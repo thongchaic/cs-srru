@@ -1,0 +1,13 @@
+   86  esptool.py --port /dev/ttyUSB0 erase_flash
+   99  esptool.py --port /dev/ttyUSB0 --baud 460800 write_flash --flash_size=detect 0 esp8266-20190529-v1.11.bin 
+  206  esptool.py --port /dev/ttyUSB0 erase_flash
+  207  esptool.py --port /dev/ttyUSB0 --baud 460800 write_flash --flash_size=detect 0 esp8266-20190529-v1.11.bin 
+  237  esptool.py --port /dev/ttyUSB0 erase_flash
+  238  esptool.py --chip esp32 --port /dev/ttyUSB0 write_flash -z 0x1000 esp32-20190709-v1.11-132-gc24d81119.bin 
+  461  esptool.py --port /dev/ttyUSB0 erase_flash
+  462  esptool.py --chip esp32 --port /dev/ttyUSB0 erase_flash
+  463  esptool.py --chip esp32 --port /dev/ttyUSB0 --baud 460800 write_flash -z 0x1000 esp32-20190731-v1.11-182-g7c15e50eb.bin 
+  464  esptool.py --chip esp32 --port /dev/ttyUSB0 erase_flash
+  465  esptool.py --chip esp32 --port /dev/ttyUSB0 --baud 460800 write_flash -z 0x1000 esp32-20190731-v1.11-182-g7c15e50eb.bin 
+  612  history | grep esptool
+  613  history | grep esptool > espcmd.txt
