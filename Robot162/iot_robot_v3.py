@@ -12,8 +12,8 @@ CFG_BSSID_PASS='SrruIoT@2019'
 
 FRONT_LED = machine.Pin(2, machine.Pin.OUT)
 P1 = machine.Pin(16, machine.Pin.OUT)
-FRONT = HCSR04(trigger_pin=12, echo_pin=14, echo_timeout_us=1000000)
 P2 = machine.Pin(4, machine.Pin.OUT)
+FRONT = HCSR04(trigger_pin=12, echo_pin=14, echo_timeout_us=1000000)
 
 def __init__():
 	print("INIT")
@@ -28,18 +28,18 @@ def do_connect():
     wlan.active(True)
 
     if wlan.isconnected():
-            print(wlan.ifconfig())
-            return
+        print(wlan.ifconfig())
+        return
 
     if not wlan.isconnected():
-            wlan.connect(CFG_BSSID,CFG_BSSID_PASS)
-            c = 0
-            while not wlan.isconnected():
-                    time.sleep(1)
-                    print('[',c,'] connecting ... to WLAN')
-                    c = c + 1
-                    FRONT_LED.value(c%2)
-                    pass
+        wlan.connect(CFG_BSSID,CFG_BSSID_PASS)
+        c = 0
+        while not wlan.isconnected():
+            time.sleep(1)
+            print('[',c,'] connecting ... to WLAN')
+            c = c + 1
+            FRONT_LED.value(c%2)
+            pass
 
 def stop():
     print("stop")
@@ -51,6 +51,10 @@ def forward():
 	P1.on()
 	P2.off()
 
+def backward():
+	#P1.off()
+	#P2.off()
+
 def start_my_car():
 
 	while True:
@@ -61,7 +65,7 @@ def start_my_car():
 		else:
 			forward()
 
-		time.sleep(0.1)
+		time.sleep(0.5)
 
 
 if __name__ == '__main__':
