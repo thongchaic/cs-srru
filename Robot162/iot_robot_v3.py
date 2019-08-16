@@ -48,10 +48,12 @@ def stop():
     P2.on()
 
 def forward():
+	print("forward....")
 	P1.on()
 	P2.off()
 
 def backward():
+	print("backward....")
 	#P1.off()
 	#P2.off()
 
