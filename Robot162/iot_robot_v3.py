@@ -25,25 +25,6 @@ def __init__():
     ap = network.WLAN(network.AP_IF)
     ap.active(False)
 
-def do_connect():
-
-    wlan = network.WLAN(network.STA_IF)
-    wlan.active(True)
-
-    if wlan.isconnected():
-        print(wlan.ifconfig())
-        return
-
-    if not wlan.isconnected():
-        wlan.connect(CFG_BSSID,CFG_BSSID_PASS)
-        c = 0
-        while not wlan.isconnected():
-            time.sleep(1)
-            print('[',c,'] connecting ... to WLAN')
-            c = c + 1
-            FRONT_LED.value(c%2)
-            pass
-
 def stop():
     print("stop")
     FRONT_LED.value(0)
@@ -54,10 +35,7 @@ def stop():
 
 def forward():
     print("forward....")
-    P1.off()
-    P2.on()
-    P3.off()
-    P4.on()
+
 
 def backward():
     print("backward....")
@@ -79,8 +57,6 @@ def start_my_car():
 if __name__ == '__main__':
 
     __init__()
-    #start_ap(False)
-    #do_connect()
     start_my_car()
 
 
