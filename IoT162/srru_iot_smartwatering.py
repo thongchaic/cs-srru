@@ -108,6 +108,11 @@ if __name__ == '__main__':
 
 	if connected:
                 while True:
-                        measurment()
+                        temp, humid, soil = measurment()
+                        if soil > 790:
+                                RELAY.on()
+                        else:
+                                RELAY.off()
+                                
                         time.sleep(2)
                         
