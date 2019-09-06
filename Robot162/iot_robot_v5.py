@@ -5,8 +5,6 @@ import network
 import ubinascii
 import urequests
 import socket
-
-#driver for distance_cm()
 from hcsr04 import HCSR04
 
 CFG_BSSID='SRRU-IoT'
@@ -26,14 +24,16 @@ def __init__():
     FRONT_LED.value(1)
     ap = network.WLAN(network.AP_IF)
     ap.active(False)
+    stop()
 
 def stop():
     print("stop")
     FRONT_LED.value(0)
-    P1.on()
-    P2.on()
-    P3.on()
-    P4.on()
+    P1.off()
+    P2.off()
+    P3.off()
+    P4.off()
+    time.sleep(1)
 
 def forward():
     print("forward....")
@@ -41,33 +41,56 @@ def forward():
     P2.on()
     P3.off()
     P4.on()
-
-def backward(t=0):
+    
+def backward():
     print("backward....")
     P1.on()
     P2.off()
     P3.on()
     P4.off()
-    time.sleep(t)
-    stop()
 
 def turn_left(t=0):
-    print("Left....")
-    P1.on()
-    P2.on()
-    P3.off()
-    P4.on()
-    time.sleep(t)
-    stop()
-
-def turn_right(t=0):
-    print("Right....")
+    print("trun left")
     P1.off()
     P2.on()
-    P3.on()
-    P4.on()
+    P3.off()
+    P4.off()
     time.sleep(t)
-    stop()
+
+def turn_leftv2():
+    print("turn left v2")
+    P1.off()
+    P2.on()
+    P3.off()
+    P4.off()
+    while True:
+        front_cm = FRONT.distance_cm()
+        if front_cm > 20:
+            stop()
+            break
+    
+    time.sleep(1)
+
+def turn_right(t=0):
+    print("Turn right")
+    P1.off()
+    P2.off()
+    P3.off()
+    P4.on()
+    time.sleep(1)
+
+def turn_rightv2():
+    print("Turn right")
+    P1.off()
+    P2.off()
+    P3.off()
+    P4.on()
+    while True:
+        front_cm = FRONT.distance_cm()
+        if front_cm > 20:
+            stop()
+            break
+    time.sleep(1)
 
 def start_my_car():
     while True:
@@ -75,16 +98,21 @@ def start_my_car():
 	print("Front=>", front_cm)
 	if front_cm < 20:
 	    stop()
-	    time.sleep(2)
-	    turn_left(4)
-	
+            #think
+            time.sleep(1)
+            #check =>[left, right]
+            #choose => left 
+            turn_left(5)
+            #turn_leftv2()
 	else:
 	    forward()
 
 	time.sleep(0.5)
 
+
 if __name__ == '__main__':
 
     __init__()
     start_my_car()
+
 

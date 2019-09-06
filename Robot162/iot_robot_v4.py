@@ -37,15 +37,15 @@ def stop():
 
 def forward():
     print("forward....")
-    P1.off()
-    P2.on()
+    P1.on()
+    P2.off()
     P3.off()
     P4.on()
 
 def backward(t=0):
     print("backward....")
-    P1.on()
-    P2.off()
+    P1.off()
+    P2.on()
     P3.on()
     P4.off()
     time.sleep(t)
@@ -54,17 +54,17 @@ def backward(t=0):
 def turn_left(t=0):
     print("Left....")
     P1.on()
-    P2.on()
-    P3.off()
+    P2.off()
+    P3.on()
     P4.on()
     time.sleep(t)
     stop()
 
 def turn_right(t=0):
     print("Right....")
-    P1.off()
+    P1.on()
     P2.on()
-    P3.on()
+    P3.off()
     P4.on()
     time.sleep(t)
     stop()
