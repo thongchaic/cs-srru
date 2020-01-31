@@ -7,7 +7,6 @@ import urequests
 #from MQ2 import MQ2
 import dht
 
-
 CFG_BSSID='PNHome2'
 CFG_BSSID_PASS='st11ae58*'
 
@@ -16,7 +15,7 @@ DHT_SENSOR = dht.DHT22(machine.Pin(5))
 MQ2_SENSOR = machine.ADC(0)#MQ2(pinData=0,baseVoltage=5.0)
 
 def __init__():
-	FRONT_LED.value(1)
+        FRONT_LED.value(1)
 
 def start_ap():
 	ap = network.WLAN(network.AP_IF)
@@ -133,20 +132,25 @@ if __name__ == '__main__':
 	#connected = do_connect()
 
         while True:
-                connected = do_connect()
-                if connected:
-                        FRONT_LED.value(1)
-		        temp, humid, smoke, lpg, methane, hydrogen = measurment()
-                        c = 0
-                        while not send_data(temp, humid, smoke, lpg, methane, hydrogen):
-                                print('Send data failed .. ',c)
-                                time.sleep(3)
-                                c = c + 1
-                                if c > 5:
-                                    FRONT_LED.value(0)
-                                    break
-                                pass
-                time.sleep(30)
+                try:
+                        connected = do_connect()
+                        if connected:
+                                FRONT_LED.value(1)
+                                temp, humid, smoke, lpg, methane, hydrogen = measurment()
+                                c = 0
+                                while not send_data(temp, humid, smoke, lpg, methane, hydrogen):
+                                        print('Send data failed .. ',c)
+                                        time.sleep(3)
+                                        c = c + 1
+                                        if c > 5:
+                                            FRONT_LED.value(0)
+                                            break
+                                        pass
+                        time.sleep(30)
+                except:
+                        print("fatal error")
+                        time.sleep(60)
+                        #deep_sleep()
 
         #FRONT_LED.value(1)
         #print("Code update gap")

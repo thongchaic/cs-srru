@@ -31,37 +31,6 @@ def __init__():
     ap.config(essid="TC_Racing")
     stop()
 
-def remote_car():
-    print("Start TC Server....")
-    sock = socket.socket()
-    sock.bind(SERVER)
-    sock.listen(1)
-    while True:
-        client, addr = sock.accept()
-        clfile = client.makefile('rwb',0)
-        while True:
-            line = client.readline()
-            if not line or line == b'\r\n':
-                break 
-            tmp = str(line)
-            if "GET /?move=forward" in tmp:
-                forward()
-            elif "GET /?move=stop" in tmp:
-                stop()
-            elif "GET /?move=left" in tmp:
-                turn_left()
-            elif "GET /?move=backward" in tmp:
-                backward()
-            elif "GET /?move=right" in tmp:
-                turn_right()
-        
-        remote = remote_control()
-        client.send("HTTP/1.1 200 OK\n")
-        client.send("Content-Type: text/html\n")
-        client.send("Connection: close\n\n")
-        client.sendall(remote)
-        client.close()
-
 def stop():
     print("stop")
     FRONT_LED.value(0)
@@ -128,10 +97,11 @@ def turn_rightv2():
             break
     time.sleep(1)
 
+
 def remote_control():
-    print("web..")
+    print("remote")
     html = '''
-<!DOCTYPE html>
+    <!DOCTYPE html>
 <html>
 <head>
 <title>TC Racing</title>
@@ -142,56 +112,82 @@ body {
   color: white;
   font-family: Arial, Helvetica, sans-serif;
 }
-.button{display: inline-block; background-color: yellow; border: none;
-  border-radius: 4px; color: blue; padding: 16px 40px; text-decoration: none; font-size: 30px; margin: 2px; cursor: pointer;}
+.button{display: inline-block; background-color: #e7bd3b; border: none;
+  border-radius: 4px; color: white; padding: 16px 40px; text-decoration: none; font-size: 30px; margin: 2px; cursor: pointer;}
 </style>
 </head>
 <body>
 
 <h1>TC Racing</h1>
 
- <table border="0" width="100%">
+ <table border="1" width="100%">
     <tr>
         <td colspan="2">
-        	<a href="/?move=forward">	
-            	<button  class="button">Forward</button>
+        	<a  href="/?move=forward">
+            	<button class="button">Forward</button>
             </a>
         </td>
     </tr>
     <tr>
         <td>
-        	<a href="/?move=left">	
-            	<button  class="button">Left</button>
+         <a  href="/?move=turn_left">
+            	<button class="button">Left</button>
             </a>
         </td>
         <td>
-        <a href="/?move=right">	
-            	<button  class="button">Right</button>
+         <a  href="/?move=turn_right">
+            	<button class="button">Right</button>
             </a>
         </td>
     </tr>
      <tr>
         <td colspan="2">
-        	<a href="/?move=backward">	
-            	<button  class="button">Backward</button>
+        <a  href="/?move=backward">
+            	<button class="button">Backward</button>
             </a>
         </td>
     </tr>
     <tr>
         <td colspan="2">
-        	<br><br>
-        	<a href="/?move=stop">	
-            	<button  class="button">Stop</button>
+        <a  href="/?move=stop">
+            	<button class="button">Stop</button>
             </a>
         </td>
     </tr>
   </table>
-
 </body>
 </html>
     '''
-    
-    return html
+    return html 
+
+def remote_car():
+    print("start remote....")
+    sock = socket.socket()
+    sock.bind(SERVER) 
+    sock.listen(1)
+    while True:
+        client, addr = sock.accept()
+        clfile = client.makefile('rwb',0)
+        while True:
+            line = client.readline()
+            if not line or line == b'\r\n':
+                break 
+            tmp = str(line)
+            if "GET /?move=stop" in tmp:
+                stop()
+            elif "GET /?move=forward" in tmp:
+                forward()
+            elif "GET /?move=turn_left" in tmp:
+                turn_left()
+            elif "GET /?move=turn_right" in tmp:
+                turn_right()
+        
+        remote = remote_control()
+        client.send("HTTP/1.1 200 OK\n")
+        client.send("Content-Type: text/html\n")
+        client.send("Connection: close\n\n")
+        client.sendall(remote)
+        client.close()
 
 def auto_car():
     while True:
@@ -207,9 +203,7 @@ def auto_car():
             #turn_leftv2()
 	else:
 	    forward()
-
 	time.sleep(0.5)
-
 
 if __name__ == '__main__':
 
