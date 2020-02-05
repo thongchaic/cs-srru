@@ -38,3 +38,20 @@ def do_connect():
                         pass
 
         return True
+
+
+def measurment():
+
+        temp = None
+        humid = None
+
+        try:
+		DHT_SENSOR.measure()
+		temp = DHT_SENSOR.temperature()
+		humid  = DHT_SENSOR.humidity()
+	except:
+		print("DHT ERROR....")
+
+	return temp, humid
+
+	
