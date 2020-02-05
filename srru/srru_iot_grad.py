@@ -71,3 +71,33 @@ def send_data(temp, humid):
     return True
 
 
+def deep_sleep():
+    print('Deep sleep...for .. 60s')
+    rtc = machine.RTC()
+    rtc.irq(trigger=rtc.ALARM0, wake=machine.DEEPSLEEP)
+    rtc.alarm(rtc.ALARM0, 60000)
+    machine.deepsleep()
+
+if __name__ == '__main__':
+    __init__()
+    while True:
+        try:
+            connected = do_connect()
+            if connected:
+                temp, humid = measurment()
+                c = 0
+                while not send_data(temp, humid):
+                    print('Send data failed .. ',c)
+                    time.sleep(15)
+                    c = c + 1
+                    if c > 5:
+                        break
+                
+                time.sleep(30)
+                
+        except:
+            print("fatal error")
+            time.sleep(60)
+
+
+            
