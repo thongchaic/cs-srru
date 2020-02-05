@@ -55,3 +55,19 @@ def measurment():
 	return temp, humid
 
 	
+def send_data(temp, humid):
+    print("sending => ",temp, humid)
+    send_url = "https://surin.srru.ac.th/api/iot/data?token=431.2218518518519&device_id=19"
+    if temp is not None:
+        send_url = send_url+"&dht_temperature="+str(temp)
+    if humid is not None:
+        send_url = send_url+"&dht_humidity="+str(humid)
+
+    try:
+        urequests.get(send_url)
+    except:
+        return False
+    
+    return True
+
+
