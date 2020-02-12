@@ -4,12 +4,12 @@ import network
 import ubinascii
 import urequests
 import dht
+import gc 
 
-#https://surin.srru.ac.th/api/iot/data?token=431.2218518518519&device_id=9&dht_temperature=27
 #CFG_BSSID='SRRU-IoT'
 #CFG_BSSID_PASS='SrruIoT@2019'
 
-
+DEVICE_ID='17'
 CFG_BSSID='CSOffice2'
 CFG_BSSID_PASS=''
 
@@ -18,6 +18,7 @@ DHT_SENSOR = dht.DHT22(machine.Pin(5))
 
 
 def __init__():
+    gc.enable()
     ap = network.WLAN(network.AP_IF)
     ap.active(False)
 
@@ -39,7 +40,7 @@ def do_connect():
                         c = c + 1
                         if c > 300:
                             return False
-                    
+                        
         print(wlan.ifconfig())
         return True
 
@@ -60,8 +61,8 @@ def measurment():
 
 	
 def send_data(temp, humid):
-    print("sending => ",temp, humid)
-    send_url = "https://surin.srru.ac.th/api/iot/data?token=431.2218518518519&device_id=19"
+    print(DEVICE_ID,"_sending => ",temp, humid)
+    send_url = "https://surin.srru.ac.th/api/iot/data?token=431.2218518518519&device_id="+str(DEVICE_ID)
     if temp is not None:
         send_url = send_url+"&dht_temperature="+str(temp)
     if humid is not None:
@@ -82,6 +83,11 @@ def deep_sleep():
     rtc.alarm(rtc.ALARM0, 60000)
     machine.deepsleep()
 
+def reset_machine():
+    gc.collect()
+    time.sleep(3)
+    machine.reset()
+    
 if __name__ == '__main__':
     __init__()
     while True:
@@ -92,17 +98,14 @@ if __name__ == '__main__':
                 c = 0
                 while not send_data(temp, humid):
                     print('Send data failed .. ',c)
-                    time.sleep(5)
+                    time.sleep(10)
                     c = c + 1
-                    if c > 5:
-                        break
+                    if c > 6:
+                        reset_machine()
                 
                 time.sleep(30)
             else:
-                machine.reset()
+                reset_machine()
                 
         except:
-            machine.reset()
-
-
-            
+            reset_machine()
