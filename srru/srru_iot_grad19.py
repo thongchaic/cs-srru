@@ -31,18 +31,24 @@ def do_connect():
                 print(wlan.ifconfig())
                 return True
 
+        
         if not wlan.isconnected():
                 wlan.connect(CFG_BSSID, CFG_BSSID_PASS)
                 c = 0
+                d = 0
                 while not wlan.isconnected():
                         time.sleep(1)
                         print('[',c,'] connecting ... to ',CFG_BSSID)
-                        c = c + 1
-                        if c > 300:
-                            return False
+                        c = c + 1 
+                        if c > 60:
+                            wlan.connect(CFG_BSSID, CFG_BSSID_PASS)
+                            d = d + 1
+                            if d > 5:
+                                return False
                         
         print(wlan.ifconfig())
         return True
+
 
 
 def measurment():

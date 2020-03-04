@@ -4,21 +4,21 @@ import network
 import ubinascii
 import urequests
 import dht
-import gc 
+from hcsr04 import HCSR04
 
+#https://surin.srru.ac.th/api/iot/data?token=431.2218518518519&device_id=9&dht_temperature=27
 #CFG_BSSID='SRRU-IoT'
 #CFG_BSSID_PASS='SrruIoT@2019'
 
-DEVICE_ID='16'
+
 CFG_BSSID='CSOffice2'
 CFG_BSSID_PASS=''
 
 
 DHT_SENSOR = dht.DHT22(machine.Pin(5))
-
+DISTANCE = HCSR04(trigger_pin=14,echo_pin=12)
 
 def __init__():
-    gc.enable()
     ap = network.WLAN(network.AP_IF)
     ap.active(False)
 
@@ -49,30 +49,51 @@ def do_connect():
         print(wlan.ifconfig())
         return True
 
+
 def measurment():
 
         temp = None
         humid = None
-
+        distance = None
         try:
-		DHT_SENSOR.measure()
-		temp = DHT_SENSOR.temperature()
-		humid  = DHT_SENSOR.humidity()
+	    DHT_SENSOR.measure()
+	    temp = DHT_SENSOR.temperature()
+	    humid  = DHT_SENSOR.humidity()
 	except:
-		print("DHT ERROR....")
+	    print("DHT ERROR....")
+		
+	try:
+            distance = DISTANCE.distance_cm()
+        except:
+            print("distance error")
+            
+            
+	return temp, humid, distance
 
-	return temp, humid
+
+
+
+
+
+
+
+
+
+    
 
 	
-def send_data(temp, humid):
-    print(DEVICE_ID,"_sending => ",temp, humid)
-    send_url = "https://surin.srru.ac.th/api/iot/data?token=431.2218518518519&device_id="+str(DEVICE_ID)
+def send_data(temp, humid, distance):
+    print("sending => ",temp,",", humid,",",distance)
+    send_url = "https://surin.srru.ac.th/api/iot/data?token=431.2218518518519&device_id=15"
     if temp is not None:
         send_url = send_url+"&dht_temperature="+str(temp)
     if humid is not None:
         send_url = send_url+"&dht_humidity="+str(humid)
+    if distance is not None:
+        send_url = send_url+"&hcsr04_distance="+str(distance)
 
     try:
+        print(send_url)
         urequests.get(send_url)
     except:
         return False
@@ -87,29 +108,27 @@ def deep_sleep():
     rtc.alarm(rtc.ALARM0, 60000)
     machine.deepsleep()
 
-def reset_machine():
-    gc.collect()
-    time.sleep(3)
-    machine.reset()
-    
 if __name__ == '__main__':
     __init__()
     while True:
         try:
             connected = do_connect()
             if connected:
-                temp, humid = measurment()
+                temp, humid, distance = measurment()
                 c = 0
-                while not send_data(temp, humid):
+                while not send_data(temp, humid, distance):
                     print('Send data failed .. ',c)
-                    time.sleep(10)
+                    time.sleep(5)
                     c = c + 1
-                    if c > 6:
-                        reset_machine()
+                    if c > 5:
+                        break
                 
-                time.sleep(30)
+                time.sleep(5)
             else:
-                reset_machine()
+                #machine.reset()
+                print("Exit")
                 
         except:
-            reset_machine()
+            #machine.reset()
+            print('error')
+            break
