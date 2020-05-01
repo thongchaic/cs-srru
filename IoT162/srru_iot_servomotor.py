@@ -13,7 +13,7 @@ CFG_BSSID_PASS='SrruIoT@2019'
 
 FRONT_LED = machine.Pin(2, machine.Pin.OUT)
 
-servo = machine.PWM(machine.Pin(2), freq=1000)
+servo = machine.PWM(machine.Pin(0), freq=1000)
 
 
 def __init__():
