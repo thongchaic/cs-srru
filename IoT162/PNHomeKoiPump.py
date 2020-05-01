@@ -18,8 +18,8 @@ FOUTAIN = machine.Pin(12,machine.Pin.OUT)
 def __init__():
 	ap = network.WLAN(network.AP_IF)
 	ap.active(False)
-	FILTER.on()
-	FOUTAIN.on()
+	FILTER.off()
+	FOUTAIN.off()
 	
 	
 def do_connect():
@@ -36,7 +36,7 @@ def do_connect():
                 c = 0
                 while not wlan.isconnected():
                         time.sleep(1)
-                        #print('[',c,'] connecting ... to WLAN')
+                        print('[',c,'] connecting ... to WLAN')
                         c = c + 1
                         if c > 300:
                                 return False
@@ -52,8 +52,8 @@ def deep_sleep():
         machine.deepsleep()
 
 def mqtt_sub(t,m):
-        #print(str(t))
-        #print(str(m))
+        print(str(t))
+        print(str(m))
         if t == b"/pnhome/koi/filter":
                 if m == b"0":
                         FILTER.off()
@@ -75,6 +75,7 @@ if __name__ == '__main__':
         while True:
                 connected = do_connect()
                 if connected:
+                        
                         MQTT.set_callback(mqtt_sub)
                         MQTT.connect()
                         MQTT.subscribe(b"/pnhome/koi/foutain")
@@ -82,12 +83,34 @@ if __name__ == '__main__':
                         MQTT.subscribe(b"/pnhome/koi/status")
                         #MQTT.wait_msg()
                         if True:
-                                print("Wait...")
-                                MQTT.wait_msg()
+                                t1 = time.time()
+                                while True:
+                                        try:
+                                                #print("WAit")
+                                                dif = time.time() - t1
+                                                #print(t1, time.time(), dif)
+                                                MQTT.check_msg()
+                                                time.sleep(0.5)
+                                                if dif > 90:
+                                                        t1 = time.time()
+                                                        pl = str(FILTER.value())+str(FOUTAIN.value())
+                                                        MQTT.publish(b"/pnhome/koi/value",pl)
+                                                        break
+                                                        
+                                                        
+                                                #MQTT.wait_msg()
+                                        finally:
+                                                #MQTT.disconnect()
+                                                pass
+                                                #print("disconnected ... ")
+##                                                #time.sleep(1)
+                                                #machine.reset()
+                                                
                         else:
-                                print("Check...")
+                                #print("Check...")
                                 MQTT.check_msg()
                                 time.sleep(1)
+                        
                 else:
                         time.sleep(10)
 
