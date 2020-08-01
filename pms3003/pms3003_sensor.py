@@ -38,6 +38,7 @@ def do_connect():
 
 def send_data(pm25, pm10, temp, humid):
     try:
+
         send_url = "https://surin.srru.ac.th/api/iot/data?token=431.2218518518519&device_id=9"
         if temp is not None:
                 send_url = send_url+"&dht_temperature="+str(temp)
@@ -91,6 +92,8 @@ def sening():
     pm25, pm10 = extract_pms(raw)    
     temp, humid = dht_sensing()
     return pm25, pm10, temp, humid
+
+
 if __name__ == '__main__':
     __init__()
     while True:
@@ -98,13 +101,13 @@ if __name__ == '__main__':
             pm25, pm10, temp, humid = sening()
             print(pm25, pm10, temp, humid)
             c = 0
-            while not send_data(pm25, pm10, temp, humid) and c < 3:
+            while not send_data(pm25, pm10, temp, humid) and c < 12:
                 c =  c + 1 
                 #print("try again ..",c)
                 time.sleep(5)
 
-        #print("-", c)
-        #if c >= 5:
-        #    time.sleep(10)
-        #    machine.reset()
+        print("-", c)
+        if c >= 12:
+            time.sleep(5)
+            machine.reset()
         time.sleep(30)
