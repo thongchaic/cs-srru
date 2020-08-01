@@ -1,5 +1,0 @@
-[Desktop Entry]
-Type=Application
-Name=ardesia
-Icon=folder-documents
-Exec=xdg-open /root/Documents/ardesia
