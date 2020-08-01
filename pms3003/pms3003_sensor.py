@@ -4,7 +4,7 @@ import machine
 import time
 import urequests
 import gc 
-import micropython
+#import micropython
 
 pms = machine.UART(2,9600)
 dhs = dht.DHT22(machine.Pin(4))
@@ -109,10 +109,10 @@ if __name__ == '__main__':
                 #print("try again ..",c)
                 time.sleep(5)
 
-        print("-", c)
+        #print("-", c)
         if c >= 24:
             time.sleep(10)
             machine.reset()
         gc.collect()
-        micropython.mem_info()
+        #micropython.mem_info()
         time.sleep(30)
