@@ -3,6 +3,8 @@ import dht
 import machine 
 import time
 import urequests
+import gc 
+import micropython
 
 pms = machine.UART(2,9600)
 dhs = dht.DHT22(machine.Pin(4))
@@ -14,6 +16,7 @@ def __init__():
     #ap = network.WLAN(network.STA_IF)
     #ap.active(False)
     pms.init(9600,bits=8,parity=None,stop=1)
+    gc.enable()
 
 def do_connect():
 
@@ -101,13 +104,15 @@ if __name__ == '__main__':
             pm25, pm10, temp, humid = sening()
             print(pm25, pm10, temp, humid)
             c = 0
-            while not send_data(pm25, pm10, temp, humid) and c < 12:
+            while not send_data(pm25, pm10, temp, humid) and c < 24:
                 c =  c + 1 
                 #print("try again ..",c)
                 time.sleep(5)
 
         print("-", c)
-        if c >= 12:
-            time.sleep(5)
+        if c >= 24:
+            time.sleep(10)
             machine.reset()
+        gc.collect()
+        micropython.mem_info()
         time.sleep(30)
