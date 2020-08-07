@@ -13,6 +13,7 @@ CFG_BSSID='SRRU-WiFi'
 CFG_BSSID_PASS=''
 START=time.ticks_ms()
 
+
 def __init__():
     pms.init(9600,bits=8,parity=None,stop=1)
     gc.enable()
@@ -41,7 +42,7 @@ def do_connect():
 def send_data(pm25, pm10, temp, humid):
     try:
 
-        send_url = "https://surin.srru.ac.th/api/iot/data?token=431.2218518518519&device_id=11"
+        send_url = "https://surin.srru.ac.th/api/iot/data?token=431.2218518518519&device_id=16"
         if temp is not None:
                 send_url = send_url+"&dht_temperature="+str(temp)
         if humid is not None:
@@ -116,9 +117,10 @@ if __name__ == '__main__':
                 time.sleep(5)
                 machine.reset()
             
-            time.sleep(15)
+            time.sleep(20)
             gc.collect()
 
         except:
             time.sleep(30)
             machine.reset()
+
