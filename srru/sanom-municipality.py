@@ -6,15 +6,13 @@ import urequests
 import gc 
 #import micropython
 
-pms = machine.UART(2,9600)
+pms = machine.UART(2)
 dhs = dht.DHT22(machine.Pin(4))
 
 CFG_BSSID='PNHome2'
 CFG_BSSID_PASS='st11ae58*'
 
 def __init__():
-    #ap = network.WLAN(network.STA_IF)
-    #ap.active(False)
     pms.init(9600,bits=8,parity=None,stop=1)
     gc.enable()
 
@@ -42,7 +40,7 @@ def do_connect():
 def send_data(pm25, pm10, temp, humid):
     try:
 
-        send_url = "https://surin.srru.ac.th/api/iot/data?token=431.2218518518519&device_id=9"
+        send_url = "https://surin.srru.ac.th/api/iot/data?token=431.2218518518519&device_id=22"
         if temp is not None:
                 send_url = send_url+"&dht_temperature="+str(temp)
         if humid is not None:
@@ -52,17 +50,16 @@ def send_data(pm25, pm10, temp, humid):
         if pm10 is not None:
                 send_url = send_url+"&pm10="+str(pm10)
 
-        #print(send_url)
         urequests.get(send_url)
         return True
     except:
         return False
     return False
 def calc_pms(x,y):
-    pm25 = x
-    pm25 <<= 8
-    pm25 = pm25 | y
-    return pm25
+    pm = x
+    pm <<= 8
+    pm = pm | y
+    return pm
 
 def extract_pms(raw):
     try:
@@ -70,8 +67,6 @@ def extract_pms(raw):
         pm25=None
         for i, x in enumerate(raw):
             if i+9 < len(raw)-1 and x == 66 and raw[i+1] == 77:
-                #print(raw)
-                #print(i, raw[i],raw[i+1],raw[i+6],raw[i+7],raw[i+8], raw[i+9])
                 pm25 = calc_pms(raw[i+6],raw[i+7])
                 pm10 = calc_pms(raw[i+8],raw[i+9])
                 return pm25, pm10
@@ -103,16 +98,17 @@ if __name__ == '__main__':
         if do_connect():
             pm25, pm10, temp, humid = sening()
             print(pm25, pm10, temp, humid)
-            c = 0
+            c = 0      
             while not send_data(pm25, pm10, temp, humid) and c < 30:
-                c =  c + 1 
-                #print("try again ..",c)
-                time.sleep(10)
+               c =  c + 1 
+               #print("trying...",c)
+               time.sleep(10)
 
-        #print("-", c)
-        #if c >= 24:
-        #    time.sleep(10)
-        #    machine.reset()
+            if c >= 30:
+               gc.collect()
+               time.sleep(30)
+               machine.reset()
+
         gc.collect()
         #micropython.mem_info()
         time.sleep(30)
