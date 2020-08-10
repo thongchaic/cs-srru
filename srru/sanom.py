@@ -3,19 +3,21 @@ import dht
 import machine 
 import time
 import urequests
-import gc 
+import gc
+import esp
 #import micropython
 
 pms = machine.UART(2)
 dhs = dht.DHT22(machine.Pin(4))
 
-CFG_BSSID='SRRU-WiFi'
+CFG_BSSID='sanom@office'
 CFG_BSSID_PASS=''
 START=time.ticks_ms()
 
 def __init__():
     pms.init(9600,bits=8,parity=None,stop=1)
     gc.enable()
+    esp.osdebug(False)
 
 def do_connect():
 
@@ -99,7 +101,7 @@ if __name__ == '__main__':
         try:
             if do_connect():
                 pm25, pm10, temp, humid = sening()
-                print(pm25, pm10, temp, humid)
+                #print(pm25, pm10, temp, humid)
                 c = 0      
                 while not send_data(pm25, pm10, temp, humid) and c < 30:
                     c =  c + 1 
@@ -111,11 +113,11 @@ if __name__ == '__main__':
 
 
             diff = (time.ticks_ms()-START)/(1000*60)
-            print(diff)
-            if diff >= 240:
+            #print(diff)
+            if diff >= 180:
                 machine.reset()
 
-            time.sleep(5)
+            time.sleep(20)
             gc.collect()
 
         except:
