@@ -113,8 +113,7 @@ if __name__ == '__main__':
 
             diff = (time.ticks_ms()-START)/(1000*60)
             print(diff)
-            if diff >= 240:
-                time.sleep(5)
+            if diff >= 120:
                 machine.reset()
             
             time.sleep(20)
