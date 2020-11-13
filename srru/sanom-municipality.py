@@ -3,21 +3,18 @@ import dht
 import machine 
 import time
 import urequests
-import gc
-import esp
+import gc 
 #import micropython
 
 pms = machine.UART(2)
 dhs = dht.DHT22(machine.Pin(4))
 
-CFG_BSSID='sanom@office'
-CFG_BSSID_PASS=''
-START=time.ticks_ms()
+CFG_BSSID='PNHome2'
+CFG_BSSID_PASS='st11ae58*'
 
 def __init__():
     pms.init(9600,bits=8,parity=None,stop=1)
     gc.enable()
-    esp.osdebug(False)
 
 def do_connect():
 
@@ -58,7 +55,6 @@ def send_data(pm25, pm10, temp, humid):
     except:
         return False
     return False
-
 def calc_pms(x,y):
     pm = x
     pm <<= 8
@@ -95,31 +91,24 @@ def sening():
     temp, humid = dht_sensing()
     return pm25, pm10, temp, humid
 
+
 if __name__ == '__main__':
     __init__()
     while True:
-        try:
-            if do_connect():
-                pm25, pm10, temp, humid = sening()
-                #print(pm25, pm10, temp, humid)
-                c = 0      
-                while not send_data(pm25, pm10, temp, humid) and c < 30:
-                    c =  c + 1 
-                    time.sleep(10)
+        if do_connect():
+            pm25, pm10, temp, humid = sening()
+            print(pm25, pm10, temp, humid)
+            c = 0      
+            while not send_data(pm25, pm10, temp, humid) and c < 30:
+               c =  c + 1 
+               #print("trying...",c)
+               time.sleep(10)
 
-                if c >= 30:
-                    time.sleep(30)
-                    machine.reset()
+            if c >= 30:
+               gc.collect()
+               time.sleep(30)
+               machine.reset()
 
-
-            diff = (time.ticks_ms()-START)/(1000*60)
-            #print(diff)
-            if diff >= 180:
-                machine.reset()
-
-            time.sleep(20)
-            gc.collect()
-
-        except:
-            time.sleep(30)
-            machine.reset()
+        gc.collect()
+        #micropython.mem_info()
+        time.sleep(30)

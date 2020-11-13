@@ -104,15 +104,15 @@ if __name__ == '__main__':
             pm25, pm10, temp, humid = sening()
             print(pm25, pm10, temp, humid)
             c = 0
-            while not send_data(pm25, pm10, temp, humid) and c < 24:
+            while not send_data(pm25, pm10, temp, humid) and c < 30:
                 c =  c + 1 
                 #print("try again ..",c)
-                time.sleep(5)
+                time.sleep(10)
 
         #print("-", c)
-        if c >= 24:
-            time.sleep(10)
-            machine.reset()
+        #if c >= 24:
+        #    time.sleep(10)
+        #    machine.reset()
         gc.collect()
         #micropython.mem_info()
         time.sleep(30)
